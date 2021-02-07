@@ -7,7 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HttpListen(port int, handlers []handler.HandlerI) {
+// HTTPListen *
+func HTTPListen(port int, handlers []handler.Handler) {
 	r := gin.New()
 
 	f := func(c *gin.Context) {

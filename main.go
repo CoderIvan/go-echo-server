@@ -6,13 +6,15 @@ import (
 )
 
 func main() {
-	go server.UdpListen(90, []handler.HandlerI{
+	go server.UDPListen(90, []handler.Handler{
 		&handler.Logger{},
+		&handler.Sls{},
 	})
 
-	go server.HttpListen(80, []handler.HandlerI{
-		&handler.Logger{},
-	})
+	// go server.HTTPListen(80, []handler.Handler{
+	// 	&handler.Logger{},
+	// 	&handler.Sls{},
+	// })
 
 	for {
 	}

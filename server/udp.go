@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-func process(buf []byte, addr *net.UDPAddr, handlers []handler.HandlerI) {
+func process(buf []byte, addr *net.UDPAddr, handlers []handler.Handler) {
 	projectName := ""
 	content := buf
 
@@ -23,7 +23,8 @@ func process(buf []byte, addr *net.UDPAddr, handlers []handler.HandlerI) {
 	}
 }
 
-func UdpListen(port int, h []handler.HandlerI) {
+// UDPListen *
+func UDPListen(port int, h []handler.Handler) {
 	serverConn, _ := net.ListenUDP("udp", &net.UDPAddr{
 		Port: port,
 	})

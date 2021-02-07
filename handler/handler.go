@@ -1,5 +1,6 @@
 package handler
 
-type HandlerI interface {
+// Handler *
+type Handler interface {
 	Handle(protocol string, addr string, content string, projectName string)
 }

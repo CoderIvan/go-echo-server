@@ -5,7 +5,12 @@ import (
 	"net"
 )
 
-func process(buf []byte, addr *net.UDPAddr, handlers []handler.Handler) {
+// UDPServer *
+type UDPServer struct {
+	Port int
+}
+
+func process(buf []byte, addr *net.UDPAddr, h handler.Handler) {
 	projectName := ""
 	content := buf
 
@@ -18,15 +23,13 @@ func process(buf []byte, addr *net.UDPAddr, handlers []handler.Handler) {
 		}
 	}
 
-	for _, handler := range handlers {
-		handler.Handle("udp", addr.String(), string(content), projectName)
-	}
+	h.Handle("udp", addr.String(), string(content), projectName)
 }
 
-// UDPListen *
-func UDPListen(port int, h []handler.Handler) {
+// Listen *
+func (server *UDPServer) Listen(h handler.Handler) {
 	serverConn, _ := net.ListenUDP("udp", &net.UDPAddr{
-		Port: port,
+		Port: server.Port,
 	})
 	defer serverConn.Close()
 

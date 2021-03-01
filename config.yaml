@@ -1,0 +1,12 @@
+server:
+  udp:
+    port: 80
+  http:
+    port: 80
+handler:
+  sls:
+    accessKeyID: <require>
+    accessKeySecret: <require>
+    endpoint: cn-qingdao.log.aliyuncs.com
+    projectName: docker-alpha
+    logStoreName: go-echo-server

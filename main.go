@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"sync"
 
 	"gopkg.in/yaml.v3"
 )
@@ -23,11 +24,12 @@ func (ct connect) Handle(protocol string, addr string, content string, projectNa
 }
 
 func (ct connect) run() {
+	var wg sync.WaitGroup
 	for _, server := range ct.servers {
+		wg.Add(1)
 		go server.Listen(ct)
 	}
-	for {
-	}
+	wg.Wait()
 }
 
 // Note: struct fields must be public in order for unmarshal to

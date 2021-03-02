@@ -29,10 +29,10 @@ func CreateSLS(accessKeyID string, accessKeySecret string, endpoint string, proj
 }
 
 // Handle *
-func (l *SLS) Handle(protocol string, addr string, content string, projectName string) {
+func (l *SLS) Handle(tagName string, addr string, content string, projectName string) {
 	Contents := []*sls.LogContent{{
-		Key:   proto.String("protocol"),
-		Value: proto.String(protocol),
+		Key:   proto.String("tagName"),
+		Value: proto.String(tagName),
 	}, {
 		Key:   proto.String("content"),
 		Value: proto.String(content),

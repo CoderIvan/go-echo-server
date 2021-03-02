@@ -23,7 +23,7 @@ func process(buf []byte, addr *net.UDPAddr, h handler.Handler) {
 		}
 	}
 
-	h.Handle("udp", addr.String(), string(content), projectName)
+	h.Handle("udp-server", addr.String(), string(content), projectName)
 }
 
 // Listen *

@@ -22,7 +22,7 @@ func (server *HTTPServer) Listen(h handler.Handler) {
 		buf := make([]byte, 1024)
 		n, _ := c.Request.Body.Read(buf)
 
-		h.Handle("http", c.Request.RemoteAddr, string(buf[0:n]), projectName)
+		h.Handle("http-server", c.Request.RemoteAddr, string(buf[0:n]), projectName)
 	}
 
 	r.POST("/", f)

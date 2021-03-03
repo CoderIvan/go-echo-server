@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go-echo-server/datagram"
 	"go-echo-server/handler"
 	"go-echo-server/server"
 	"io/ioutil"
@@ -17,9 +18,9 @@ type connect struct {
 	handlers []handler.Handler
 }
 
-func (ct connect) Handle(protocol string, addr string, content string, projectName string) {
+func (ct connect) Handle(data datagram.Datagram) {
 	for _, handler := range ct.handlers {
-		handler.Handle(protocol, addr, content, projectName)
+		handler.Handle(data)
 	}
 }
 

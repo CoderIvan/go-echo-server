@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"go-echo-server/datagram"
 	"time"
 
 	sls "github.com/aliyun/aliyun-log-go-sdk"
@@ -29,26 +30,26 @@ func CreateSLS(accessKeyID string, accessKeySecret string, endpoint string, proj
 }
 
 // Handle *
-func (l *SLS) Handle(tagName string, addr string, content string, projectName string) {
+func (l *SLS) Handle(datagram datagram.Datagram) {
 	Contents := []*sls.LogContent{{
 		Key:   proto.String("tagName"),
-		Value: proto.String(tagName),
+		Value: proto.String(datagram.TagName),
 	}, {
 		Key:   proto.String("content"),
-		Value: proto.String(content),
+		Value: proto.String(datagram.Content),
 	}}
 
-	if len(addr) > 0 {
+	if len(datagram.Addr) > 0 {
 		Contents = append(Contents, &sls.LogContent{
 			Key:   proto.String("addr"),
-			Value: proto.String(addr),
+			Value: proto.String(datagram.Addr),
 		})
 	}
 
-	if len(projectName) > 0 {
+	if len(datagram.ProjectName) > 0 {
 		Contents = append(Contents, &sls.LogContent{
 			Key:   proto.String("projectName"),
-			Value: proto.String(projectName),
+			Value: proto.String(datagram.ProjectName),
 		})
 	}
 

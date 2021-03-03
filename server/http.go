@@ -1,6 +1,7 @@
 package server
 
 import (
+	"go-echo-server/datagram"
 	"go-echo-server/handler"
 	"strconv"
 
@@ -22,7 +23,12 @@ func (server *HTTPServer) Listen(h handler.Handler) {
 		buf := make([]byte, 1024)
 		n, _ := c.Request.Body.Read(buf)
 
-		h.Handle("http-server", c.Request.RemoteAddr, string(buf[0:n]), projectName)
+		h.Handle(datagram.Datagram{
+			TagName:     "http-server",
+			Addr:        c.Request.RemoteAddr,
+			ProjectName: projectName,
+			Content:     string(buf[0:n]),
+		})
 	}
 
 	r.POST("/", f)

@@ -1,6 +1,8 @@
 package handler
 
+import "go-echo-server/datagram"
+
 // Handler *
 type Handler interface {
-	Handle(protocol string, addr string, content string, projectName string)
+	Handle(data datagram.Datagram)
 }

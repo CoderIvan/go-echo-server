@@ -1,6 +1,7 @@
 package server
 
 import (
+	"go-echo-server/datagram"
 	"go-echo-server/handler"
 	"net"
 )
@@ -23,7 +24,12 @@ func process(buf []byte, addr *net.UDPAddr, h handler.Handler) {
 		}
 	}
 
-	h.Handle("udp-server", addr.String(), string(content), projectName)
+	h.Handle(datagram.Datagram{
+		TagName:     "udp-server",
+		Addr:        addr.String(),
+		ProjectName: projectName,
+		Content:     string(content),
+	})
 }
 
 // Listen *

@@ -18,17 +18,19 @@ type connect struct {
 	handlers []handler.Handler
 }
 
-func (ct connect) Handle(data datagram.Datagram) {
-	for _, handler := range ct.handlers {
-		handler.Handle(data)
-	}
-}
-
 func (ct connect) run() {
 	var wg sync.WaitGroup
 	for _, server := range ct.servers {
 		wg.Add(1)
-		go server.Listen(ct)
+		ch := make(chan datagram.Datagram, 10000)
+		go func() {
+			for data := range ch {
+				for _, handler := range ct.handlers {
+					go handler.Handle(data)
+				}
+			}
+		}()
+		go server.Listen(ch)
 	}
 	wg.Wait()
 }

@@ -1,8 +1,8 @@
 package server
 
-import "go-echo-server/handler"
+import "go-echo-server/datagram"
 
 // Server *
 type Server interface {
-	Listen(h handler.Handler)
+	Listen(ch chan datagram.Datagram)
 }

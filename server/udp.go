@@ -2,7 +2,6 @@ package server
 
 import (
 	"go-echo-server/datagram"
-	"go-echo-server/handler"
 	"net"
 )
 
@@ -11,7 +10,7 @@ type UDPServer struct {
 	Port int
 }
 
-func process(buf []byte, addr *net.UDPAddr, h handler.Handler) {
+func process(buf []byte, addr *net.UDPAddr) datagram.Datagram {
 	projectName := ""
 	content := buf
 
@@ -24,16 +23,16 @@ func process(buf []byte, addr *net.UDPAddr, h handler.Handler) {
 		}
 	}
 
-	h.Handle(datagram.Datagram{
+	return datagram.Datagram{
 		TagName:     "udp-server",
 		Addr:        addr.String(),
 		ProjectName: projectName,
 		Content:     string(content),
-	})
+	}
 }
 
 // Listen *
-func (server *UDPServer) Listen(h handler.Handler) {
+func (server *UDPServer) Listen(ch chan datagram.Datagram) {
 	serverConn, _ := net.ListenUDP("udp", &net.UDPAddr{
 		Port: server.Port,
 	})
@@ -42,6 +41,7 @@ func (server *UDPServer) Listen(h handler.Handler) {
 	for {
 		buf := make([]byte, 1024)
 		n, addr, _ := serverConn.ReadFromUDP(buf)
-		go process(buf[0:n], addr, h)
+
+		ch <- process(buf[0:n], addr)
 	}
 }

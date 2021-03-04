@@ -6,4 +6,5 @@ type Datagram struct {
 	Addr        string
 	ProjectName string
 	Content     string
+	Time        int64
 }

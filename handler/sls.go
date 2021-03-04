@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"go-echo-server/datagram"
-	"time"
 
 	sls "github.com/aliyun/aliyun-log-go-sdk"
 	"google.golang.org/protobuf/proto"
@@ -55,7 +54,7 @@ func (l *SLS) Handle(datagram datagram.Datagram) {
 
 	loggroup := &sls.LogGroup{
 		Logs: []*sls.Log{{
-			Time:     proto.Uint32(uint32(time.Now().Unix())),
+			Time:     proto.Uint32(uint32(datagram.Time)),
 			Contents: Contents,
 		}},
 	}

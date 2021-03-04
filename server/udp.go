@@ -3,6 +3,7 @@ package server
 import (
 	"go-echo-server/datagram"
 	"net"
+	"time"
 )
 
 // UDPServer *
@@ -28,6 +29,7 @@ func process(buf []byte, addr *net.UDPAddr) datagram.Datagram {
 		Addr:        addr.String(),
 		ProjectName: projectName,
 		Content:     string(content),
+		Time:        time.Now().Unix(),
 	}
 }
 

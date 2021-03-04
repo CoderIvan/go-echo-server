@@ -3,6 +3,7 @@ package server
 import (
 	"go-echo-server/datagram"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,6 +28,7 @@ func (server *HTTPServer) Listen(ch chan datagram.Datagram) {
 			Addr:        c.Request.RemoteAddr,
 			ProjectName: projectName,
 			Content:     string(buf[0:n]),
+			Time:        time.Now().Unix(),
 		}
 	}
 

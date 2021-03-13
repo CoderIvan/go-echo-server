@@ -14,7 +14,7 @@ type HTTPServer struct {
 }
 
 // Listen *
-func (server *HTTPServer) Listen(ch chan datagram.Datagram) {
+func (server *HTTPServer) Listen(handle func(datagram.Datagram)) {
 	r := gin.New()
 
 	f := func(c *gin.Context) {
@@ -23,13 +23,13 @@ func (server *HTTPServer) Listen(ch chan datagram.Datagram) {
 		buf := make([]byte, 1024)
 		n, _ := c.Request.Body.Read(buf)
 
-		ch <- datagram.Datagram{
+		handle(datagram.Datagram{
 			TagName:     "http-server",
 			Addr:        c.Request.RemoteAddr,
 			ProjectName: projectName,
 			Content:     string(buf[0:n]),
 			Time:        time.Now().Unix(),
-		}
+		})
 	}
 
 	r.POST("/", f)

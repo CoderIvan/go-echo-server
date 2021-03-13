@@ -22,15 +22,11 @@ func (ct connect) run() {
 	var wg sync.WaitGroup
 	for _, server := range ct.servers {
 		wg.Add(1)
-		ch := make(chan datagram.Datagram, 10000)
-		go func() {
-			for data := range ch {
-				for _, handler := range ct.handlers {
-					go handler.Handle(data)
-				}
+		go server.Listen(func(data datagram.Datagram) {
+			for _, handler := range ct.handlers {
+				go handler.Handle(data)
 			}
-		}()
-		go server.Listen(ch)
+		})
 	}
 	wg.Wait()
 }
@@ -121,7 +117,7 @@ func main() {
 			},
 		},
 		[]handler.Handler{
-			&handler.Logger{},
+			handler.NewLogger(),
 			handler.NewSLS(
 				config.HANDLER.SLS.ACCESSKEYID,
 				config.HANDLER.SLS.ACCESSKEYSECRET,

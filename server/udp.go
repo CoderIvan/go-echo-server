@@ -69,16 +69,17 @@ func process(buf []byte, addr *net.UDPAddr) datagram.Datagram {
 }
 
 // Listen *
-func (server *UDPServer) Listen(ch chan datagram.Datagram) {
+func (server *UDPServer) Listen(handle func(datagram.Datagram)) {
 	serverConn, _ := net.ListenUDP("udp", &net.UDPAddr{
 		Port: server.Port,
 	})
 	defer serverConn.Close()
 
 	for {
+		// DOTO 有待优化，这里会不断的分配内存与回收内存，可以考虑使用缓冲池
 		buf := make([]byte, 1024)
 		n, addr, _ := serverConn.ReadFromUDP(buf)
 
-		ch <- process(buf[0:n], addr)
+		handle(process(buf[0:n], addr))
 	}
 }

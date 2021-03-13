@@ -7,11 +7,15 @@ import (
 )
 
 // Logger *
-type Logger struct {
+type logger struct {
+}
+
+func NewLogger() *logger {
+	return &logger{}
 }
 
 // Handle *
-func (l *Logger) Handle(data datagram.Datagram) {
+func (l *logger) Handle(data datagram.Datagram) {
 	if len(data.ProjectName) > 0 {
 		fmt.Println(time.Unix(data.Time, 0).Format("20060102 15:04:05.000 +0800"), ">>", data.TagName, ">>", data.Addr, ">>", data.ProjectName, ">>", string(data.Content))
 	} else {

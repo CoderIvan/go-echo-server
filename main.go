@@ -122,7 +122,7 @@ func main() {
 		},
 		[]handler.Handler{
 			&handler.Logger{},
-			handler.CreateSLS(
+			handler.NewSLS(
 				config.HANDLER.SLS.ACCESSKEYID,
 				config.HANDLER.SLS.ACCESSKEYSECRET,
 				config.HANDLER.SLS.ENDPOINT,

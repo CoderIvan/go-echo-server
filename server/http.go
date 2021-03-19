@@ -1,8 +1,9 @@
 package server
 
 import (
-	"go-echo-server/handler"
+	"go-echo-server/datagram"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +14,7 @@ type HTTPServer struct {
 }
 
 // Listen *
-func (server *HTTPServer) Listen(h handler.Handler) {
+func (server *HTTPServer) Listen(ch chan datagram.Datagram) {
 	r := gin.New()
 
 	f := func(c *gin.Context) {
@@ -22,7 +23,13 @@ func (server *HTTPServer) Listen(h handler.Handler) {
 		buf := make([]byte, 1024)
 		n, _ := c.Request.Body.Read(buf)
 
-		h.Handle("http-server", c.Request.RemoteAddr, string(buf[0:n]), projectName)
+		ch <- datagram.Datagram{
+			TagName:     "http-server",
+			Addr:        c.Request.RemoteAddr,
+			ProjectName: projectName,
+			Content:     string(buf[0:n]),
+			Time:        time.Now().Unix(),
+		}
 	}
 
 	r.POST("/", f)

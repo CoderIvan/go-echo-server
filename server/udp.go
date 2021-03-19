@@ -1,8 +1,11 @@
 package server
 
 import (
-	"go-echo-server/handler"
+	"encoding/json"
+	"go-echo-server/datagram"
 	"net"
+	"strings"
+	"time"
 )
 
 // UDPServer *
@@ -10,7 +13,7 @@ type UDPServer struct {
 	Port int
 }
 
-func process(buf []byte, addr *net.UDPAddr, h handler.Handler) {
+func process(buf []byte, addr *net.UDPAddr) datagram.Datagram {
 	projectName := ""
 	content := buf
 
@@ -21,13 +24,52 @@ func process(buf []byte, addr *net.UDPAddr, h handler.Handler) {
 				content = buf[i+1:]
 			}
 		}
+	} else { // 对显示屏终端进行特殊处理
+		valueDotKey := strings.Split(string(buf), "=")
+		if len(valueDotKey) > 1 {
+			keys := make([]string, 0, len(valueDotKey))
+			values := make([]interface{}, 0, len(valueDotKey))
+
+			keys = append(keys, valueDotKey[0])
+			for i := 1; i < len(valueDotKey)-1; i++ {
+				entry := valueDotKey[i]
+				lastIndex := strings.LastIndex(entry, ",")
+				var v interface{} = entry[:lastIndex]
+				var mapResult map[string]interface{}
+				if err := json.Unmarshal([]byte(v.(string)), &mapResult); err == nil {
+					v = mapResult
+				}
+				k := entry[lastIndex+1:]
+				keys = append(keys, k)
+				values = append(values, v)
+			}
+			values = append(values, valueDotKey[len(valueDotKey)-1])
+
+			jsonMap := make(map[string]interface{})
+			for i := 0; i < len(keys)-1; i++ {
+				if keys[i] == "project" {
+					projectName = values[i].(string)
+				} else {
+					jsonMap[keys[i]] = values[i]
+				}
+			}
+			if b, err := json.Marshal(jsonMap); err == nil {
+				content = b
+			}
+		}
 	}
 
-	h.Handle("udp-server", addr.String(), string(content), projectName)
+	return datagram.Datagram{
+		TagName:     "udp-server",
+		Addr:        addr.String(),
+		ProjectName: projectName,
+		Content:     string(content),
+		Time:        time.Now().Unix(),
+	}
 }
 
 // Listen *
-func (server *UDPServer) Listen(h handler.Handler) {
+func (server *UDPServer) Listen(ch chan datagram.Datagram) {
 	serverConn, _ := net.ListenUDP("udp", &net.UDPAddr{
 		Port: server.Port,
 	})
@@ -36,6 +78,7 @@ func (server *UDPServer) Listen(h handler.Handler) {
 	for {
 		buf := make([]byte, 1024)
 		n, addr, _ := serverConn.ReadFromUDP(buf)
-		go process(buf[0:n], addr, h)
+
+		ch <- process(buf[0:n], addr)
 	}
 }

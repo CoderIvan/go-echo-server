@@ -2,6 +2,7 @@ package server
 
 import (
 	"go-echo-server/datagram"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -9,13 +10,20 @@ import (
 )
 
 // HTTPServer *
-type HTTPServer struct {
-	Port int
+type httpServer struct {
+	port   int
+	server *http.Server
+}
+
+func NewHTTPServer(port int) *httpServer {
+	return &httpServer{
+		port: port,
+	}
 }
 
 // Listen *
-func (server *HTTPServer) Listen(handle func(datagram.Datagram)) {
-	r := gin.New()
+func (this *httpServer) Listen(handle func(datagram.Datagram)) {
+	router := gin.New()
 
 	f := func(c *gin.Context) {
 		projectName := c.Param("projectName")
@@ -32,8 +40,20 @@ func (server *HTTPServer) Listen(handle func(datagram.Datagram)) {
 		})
 	}
 
-	r.POST("/", f)
-	r.POST("/:projectName", f)
+	router.POST("/", f)
+	router.POST("/:projectName", f)
 
-	r.Run(":" + strconv.Itoa(server.Port))
+	if this.server == nil {
+		this.server = &http.Server{
+			Addr:    ":" + strconv.Itoa(this.port),
+			Handler: router,
+		}
+		this.server.ListenAndServe()
+	}
+}
+
+func (this *httpServer) Close() {
+	if this.server != nil {
+		this.server.Close()
+	}
 }

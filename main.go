@@ -109,12 +109,8 @@ func main() {
 
 	ct := connect{
 		[]server.Server{
-			&server.UDPServer{
-				Port: config.SERVER.UDP.PORT,
-			},
-			&server.HTTPServer{
-				Port: config.SERVER.HTTP.PORT,
-			},
+			server.NewUDPServer(config.SERVER.UDP.PORT),
+			server.NewHTTPServer(config.SERVER.HTTP.PORT),
 		},
 		[]handler.Handler{
 			handler.NewLogger(),

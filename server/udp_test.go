@@ -31,6 +31,19 @@ func TestProcessLed(t *testing.T) {
 	})
 }
 
+func BenchmarkProcessLed(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		origin := `imei=866262040003450,iccid=89860411101871328041,project=LedIndicator4GLINGYI,version=7.0.5,gsm=24,led={"C":10000,"D":{"R":-1,"F":5,"L":-1,"T":10}},reboot=timer,request=5`
+		processLed([]byte(origin))
+	}
+}
+
+func BenchmarkProcessLed02(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		origin := `{"gsm":"18","iccid":"89860411101871328036","imei":"866262040014556","led":{"C":10000,"D":{"F":2,"L":-1,"R":-1,"T":71}},"led2":{"C":10000,"D":{"F":6,"L":-1,"R":-1,"T":176}},"reboot":"timer","request":"6272","version":"4.1.0"}`
+		processLed([]byte(origin))
+	}
+}
 func TestProcess(t *testing.T) {
 	Convey("TestProcess rule 1", t, func() {
 		Addr := "127.0.0.1"

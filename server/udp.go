@@ -35,6 +35,7 @@ func process(buf []byte, addr string) datagram.Datagram {
 		}
 	} else { // 对显示屏终端进行特殊处理
 		valueDotKey := strings.Split(string(buf), "=")
+
 		if len(valueDotKey) > 1 {
 			keys := make([]string, 0, len(valueDotKey))
 			values := make([]interface{}, 0, len(valueDotKey))
@@ -55,7 +56,7 @@ func process(buf []byte, addr string) datagram.Datagram {
 			values = append(values, valueDotKey[len(valueDotKey)-1])
 
 			jsonMap := make(map[string]interface{})
-			for i := 0; i < len(keys)-1; i++ {
+			for i := 0; i < len(keys); i++ {
 				if keys[i] == "project" {
 					projectName = values[i].(string)
 				} else {
@@ -73,7 +74,7 @@ func process(buf []byte, addr string) datagram.Datagram {
 		Addr:        addr,
 		ProjectName: projectName,
 		Content:     string(content),
-		Time:        time.Now().Unix(),
+		Time:        time.Now().UnixNano(),
 	}
 }
 

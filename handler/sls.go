@@ -60,7 +60,7 @@ func (l *slsLogger) Handle(datagram datagram.Datagram) {
 
 	loggroup := &sls.LogGroup{
 		Logs: []*sls.Log{{
-			Time:     proto.Uint32(uint32(datagram.Time)),
+			Time:     proto.Uint32(uint32(datagram.Time / 1e9)),
 			Contents: Contents,
 		}},
 	}

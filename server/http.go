@@ -21,8 +21,7 @@ func NewHTTPServer(port int) *httpServer {
 	}
 }
 
-// Listen *
-func (this *httpServer) Listen(handle func(datagram.Datagram)) {
+func setupRouter(handle func(datagram.Datagram)) *gin.Engine {
 	router := gin.New()
 
 	f := func(c *gin.Context) {
@@ -36,12 +35,19 @@ func (this *httpServer) Listen(handle func(datagram.Datagram)) {
 			Addr:        c.Request.RemoteAddr,
 			ProjectName: projectName,
 			Content:     string(buf[0:n]),
-			Time:        time.Now().Unix(),
+			Time:        time.Now().UnixNano(),
 		})
 	}
 
 	router.POST("/", f)
 	router.POST("/:projectName", f)
+
+	return router
+}
+
+// Listen *
+func (this *httpServer) Listen(handle func(datagram.Datagram)) {
+	router := setupRouter(handle)
 
 	if this.server == nil {
 		this.server = &http.Server{

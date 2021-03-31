@@ -8,10 +8,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSetupRouter(t *testing.T) {
+	gin.SetMode(gin.ReleaseMode)
+
 	Convey("TestSetupRouter rule 1", t, func() {
 		ch := make(chan datagram.Datagram, 1)
 
@@ -32,7 +35,7 @@ func TestSetupRouter(t *testing.T) {
 		So(result.Content, ShouldEqual, content)
 		So(result.ProjectName, ShouldEqual, "")
 		So(result.TagName, ShouldEqual, "http-server")
-		So(result.Time, ShouldBeBetweenOrEqual, now, now+1e7)
+		So(result.Time, ShouldBeBetweenOrEqual, now, now+int64(time.Millisecond))
 	})
 
 	Convey("TestSetupRouter rule 2", t, func() {
@@ -55,7 +58,7 @@ func TestSetupRouter(t *testing.T) {
 		So(result.Content, ShouldEqual, content)
 		So(result.ProjectName, ShouldEqual, "")
 		So(result.TagName, ShouldEqual, "http-server")
-		So(result.Time, ShouldBeBetweenOrEqual, now, now+1e7)
+		So(result.Time, ShouldBeBetweenOrEqual, now, now+int64(time.Millisecond))
 	})
 
 	Convey("TestSetupRouter rule 3", t, func() {
@@ -79,11 +82,13 @@ func TestSetupRouter(t *testing.T) {
 		So(result.Content, ShouldEqual, content)
 		So(result.ProjectName, ShouldEqual, projectName)
 		So(result.TagName, ShouldEqual, "http-server")
-		So(result.Time, ShouldBeBetweenOrEqual, now, now+1e7)
+		So(result.Time, ShouldBeBetweenOrEqual, now, now+int64(time.Millisecond))
 	})
 }
 
 func TestHTTP(t *testing.T) {
+	gin.SetMode(gin.ReleaseMode)
+
 	Convey("TestHTTP", t, func() {
 		ch := make(chan datagram.Datagram)
 		server := NewHTTPServer(81)
@@ -107,6 +112,6 @@ func TestHTTP(t *testing.T) {
 		So(result.Content, ShouldEqual, content)
 		So(result.ProjectName, ShouldEqual, "")
 		So(result.TagName, ShouldEqual, "http-server")
-		So(result.Time, ShouldBeBetweenOrEqual, now, now+1e9)
+		So(result.Time, ShouldBeBetweenOrEqual, now, now+int64(time.Second))
 	})
 }

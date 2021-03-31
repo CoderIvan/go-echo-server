@@ -22,6 +22,46 @@ func NewUDPServer(port int) *udpServer {
 	}
 }
 
+func processLed(buf []byte) (bool, string, []byte) {
+	var projectName string
+	var content []byte
+	valueDotKey := strings.Split(string(buf), "=")
+
+	if len(valueDotKey) > 1 {
+		keys := make([]string, 0, len(valueDotKey))
+		values := make([]interface{}, 0, len(valueDotKey))
+
+		keys = append(keys, valueDotKey[0])
+		for i := 1; i < len(valueDotKey)-1; i++ {
+			entry := valueDotKey[i]
+			lastIndex := strings.LastIndex(entry, ",")
+			var v interface{} = entry[:lastIndex]
+			var mapResult map[string]interface{}
+			if err := json.Unmarshal([]byte(v.(string)), &mapResult); err == nil {
+				v = mapResult
+			}
+			k := entry[lastIndex+1:]
+			keys = append(keys, k)
+			values = append(values, v)
+		}
+		values = append(values, valueDotKey[len(valueDotKey)-1])
+
+		jsonMap := make(map[string]interface{})
+		for i := 0; i < len(keys); i++ {
+			if keys[i] == "project" {
+				projectName = values[i].(string)
+			} else {
+				jsonMap[keys[i]] = values[i]
+			}
+		}
+		if b, err := json.Marshal(jsonMap); err == nil {
+			content = b
+		}
+		return true, projectName, content
+	}
+	return false, "", nil
+}
+
 func process(buf []byte, addr string) datagram.Datagram {
 	projectName := ""
 	content := buf
@@ -34,38 +74,11 @@ func process(buf []byte, addr string) datagram.Datagram {
 			}
 		}
 	} else { // 对显示屏终端进行特殊处理
-		valueDotKey := strings.Split(string(buf), "=")
+		ok, newProjectName, newContent := processLed(buf)
 
-		if len(valueDotKey) > 1 {
-			keys := make([]string, 0, len(valueDotKey))
-			values := make([]interface{}, 0, len(valueDotKey))
-
-			keys = append(keys, valueDotKey[0])
-			for i := 1; i < len(valueDotKey)-1; i++ {
-				entry := valueDotKey[i]
-				lastIndex := strings.LastIndex(entry, ",")
-				var v interface{} = entry[:lastIndex]
-				var mapResult map[string]interface{}
-				if err := json.Unmarshal([]byte(v.(string)), &mapResult); err == nil {
-					v = mapResult
-				}
-				k := entry[lastIndex+1:]
-				keys = append(keys, k)
-				values = append(values, v)
-			}
-			values = append(values, valueDotKey[len(valueDotKey)-1])
-
-			jsonMap := make(map[string]interface{})
-			for i := 0; i < len(keys); i++ {
-				if keys[i] == "project" {
-					projectName = values[i].(string)
-				} else {
-					jsonMap[keys[i]] = values[i]
-				}
-			}
-			if b, err := json.Marshal(jsonMap); err == nil {
-				content = b
-			}
+		if ok {
+			projectName = newProjectName
+			content = newContent
 		}
 	}
 

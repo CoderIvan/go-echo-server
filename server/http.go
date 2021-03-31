@@ -2,6 +2,7 @@ package server
 
 import (
 	"go-echo-server/datagram"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -9,13 +10,19 @@ import (
 )
 
 // HTTPServer *
-type HTTPServer struct {
-	Port int
+type httpServer struct {
+	port   int
+	server *http.Server
 }
 
-// Listen *
-func (server *HTTPServer) Listen(ch chan datagram.Datagram) {
-	r := gin.New()
+func NewHTTPServer(port int) *httpServer {
+	return &httpServer{
+		port: port,
+	}
+}
+
+func setupRouter(handle func(datagram.Datagram)) *gin.Engine {
+	router := gin.New()
 
 	f := func(c *gin.Context) {
 		projectName := c.Param("projectName")
@@ -23,17 +30,36 @@ func (server *HTTPServer) Listen(ch chan datagram.Datagram) {
 		buf := make([]byte, 1024)
 		n, _ := c.Request.Body.Read(buf)
 
-		ch <- datagram.Datagram{
+		handle(datagram.Datagram{
 			TagName:     "http-server",
 			Addr:        c.Request.RemoteAddr,
 			ProjectName: projectName,
 			Content:     string(buf[0:n]),
-			Time:        time.Now().Unix(),
-		}
+			Time:        time.Now().UnixNano(),
+		})
 	}
 
-	r.POST("/", f)
-	r.POST("/:projectName", f)
+	router.POST("/", f)
+	router.POST("/:projectName", f)
 
-	r.Run(":" + strconv.Itoa(server.Port))
+	return router
+}
+
+// Listen *
+func (this *httpServer) Listen(handle func(datagram.Datagram)) {
+	router := setupRouter(handle)
+
+	if this.server == nil {
+		this.server = &http.Server{
+			Addr:    ":" + strconv.Itoa(this.port),
+			Handler: router,
+		}
+		this.server.ListenAndServe()
+	}
+}
+
+func (this *httpServer) Close() {
+	if this.server != nil {
+		this.server.Close()
+	}
 }

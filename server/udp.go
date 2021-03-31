@@ -9,11 +9,20 @@ import (
 )
 
 // UDPServer *
-type UDPServer struct {
-	Port int
+type udpServer struct {
+	conn *net.UDPConn
 }
 
-func process(buf []byte, addr *net.UDPAddr) datagram.Datagram {
+func NewUDPServer(port int) *udpServer {
+	conn, _ := net.ListenUDP("udp", &net.UDPAddr{
+		Port: port,
+	})
+	return &udpServer{
+		conn: conn,
+	}
+}
+
+func process(buf []byte, addr string) datagram.Datagram {
 	projectName := ""
 	content := buf
 
@@ -26,6 +35,7 @@ func process(buf []byte, addr *net.UDPAddr) datagram.Datagram {
 		}
 	} else { // 对显示屏终端进行特殊处理
 		valueDotKey := strings.Split(string(buf), "=")
+
 		if len(valueDotKey) > 1 {
 			keys := make([]string, 0, len(valueDotKey))
 			values := make([]interface{}, 0, len(valueDotKey))
@@ -46,7 +56,7 @@ func process(buf []byte, addr *net.UDPAddr) datagram.Datagram {
 			values = append(values, valueDotKey[len(valueDotKey)-1])
 
 			jsonMap := make(map[string]interface{})
-			for i := 0; i < len(keys)-1; i++ {
+			for i := 0; i < len(keys); i++ {
 				if keys[i] == "project" {
 					projectName = values[i].(string)
 				} else {
@@ -61,24 +71,26 @@ func process(buf []byte, addr *net.UDPAddr) datagram.Datagram {
 
 	return datagram.Datagram{
 		TagName:     "udp-server",
-		Addr:        addr.String(),
+		Addr:        addr,
 		ProjectName: projectName,
 		Content:     string(content),
-		Time:        time.Now().Unix(),
+		Time:        time.Now().UnixNano(),
 	}
 }
 
 // Listen *
-func (server *UDPServer) Listen(ch chan datagram.Datagram) {
-	serverConn, _ := net.ListenUDP("udp", &net.UDPAddr{
-		Port: server.Port,
-	})
-	defer serverConn.Close()
-
+func (server *udpServer) Listen(handle func(datagram.Datagram)) {
 	for {
+		// DOTO 有待优化，这里会不断的分配内存与回收内存，可以考虑使用缓冲池
 		buf := make([]byte, 1024)
-		n, addr, _ := serverConn.ReadFromUDP(buf)
+		n, addr, _ := server.conn.ReadFromUDP(buf)
 
-		ch <- process(buf[0:n], addr)
+		if n > 0 {
+			handle(process(buf[0:n], addr.String()))
+		}
 	}
+}
+
+func (server *udpServer) Close() {
+	server.conn.Close()
 }

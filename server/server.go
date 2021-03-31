@@ -4,5 +4,5 @@ import "go-echo-server/datagram"
 
 // Server *
 type Server interface {
-	Listen(ch chan datagram.Datagram)
+	Listen(handle func(datagram.Datagram))
 }

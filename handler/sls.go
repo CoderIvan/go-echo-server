@@ -13,15 +13,21 @@ import (
  */
 
 // SLS *
-type SLS struct {
+type slsLogger struct {
 	client       sls.ClientInterface
 	projectName  string
 	logStoreName string
 }
 
 // CreateSLS *
-func CreateSLS(accessKeyID string, accessKeySecret string, endpoint string, projectName string, logStoreName string) *SLS {
-	return &SLS{
+func NewSLS(
+	accessKeyID string,
+	accessKeySecret string,
+	endpoint string,
+	projectName string,
+	logStoreName string,
+) *slsLogger {
+	return &slsLogger{
 		client:       sls.CreateNormalInterface(endpoint, accessKeyID, accessKeySecret, ""),
 		projectName:  projectName,
 		logStoreName: logStoreName,
@@ -29,7 +35,7 @@ func CreateSLS(accessKeyID string, accessKeySecret string, endpoint string, proj
 }
 
 // Handle *
-func (l *SLS) Handle(datagram datagram.Datagram) {
+func (l *slsLogger) Handle(datagram datagram.Datagram) {
 	Contents := []*sls.LogContent{{
 		Key:   proto.String("tagName"),
 		Value: proto.String(datagram.TagName),
@@ -54,7 +60,7 @@ func (l *SLS) Handle(datagram datagram.Datagram) {
 
 	loggroup := &sls.LogGroup{
 		Logs: []*sls.Log{{
-			Time:     proto.Uint32(uint32(datagram.Time)),
+			Time:     proto.Uint32(uint32(datagram.Time / 1e9)),
 			Contents: Contents,
 		}},
 	}

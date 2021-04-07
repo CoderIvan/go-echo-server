@@ -14,11 +14,25 @@ func NewLogger() *logger {
 	return &logger{}
 }
 
+func format(data datagram.Datagram) []interface{} {
+	params := []interface{}{
+		time.Unix(0, data.Time).Format("20060102 15:04:05.000 +0800"),
+		">>",
+		data.TagName,
+		">>",
+		data.Addr,
+	}
+
+	if len(data.ProjectName) > 0 {
+		params = append(params, ">>", data.ProjectName)
+	}
+
+	params = append(params, ">>", string(data.Content))
+
+	return params
+}
+
 // Handle *
 func (l *logger) Handle(data datagram.Datagram) {
-	if len(data.ProjectName) > 0 {
-		fmt.Println(time.Unix(0, data.Time).Format("20060102 15:04:05.000 +0800"), ">>", data.TagName, ">>", data.Addr, ">>", data.ProjectName, ">>", string(data.Content))
-	} else {
-		fmt.Println(time.Unix(0, data.Time).Format("20060102 15:04:05.000 +0800"), ">>", data.TagName, ">>", data.Addr, ">>", string(data.Content))
-	}
+	fmt.Println(format(data))
 }

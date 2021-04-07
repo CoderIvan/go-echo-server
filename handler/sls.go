@@ -34,39 +34,42 @@ func NewSLS(
 	}
 }
 
-// Handle *
-func (l *slsLogger) Handle(datagram datagram.Datagram) {
+func process(data datagram.Datagram) *sls.LogGroup {
 	Contents := []*sls.LogContent{{
 		Key:   proto.String("tagName"),
-		Value: proto.String(datagram.TagName),
+		Value: proto.String(data.TagName),
 	}, {
 		Key:   proto.String("content"),
-		Value: proto.String(datagram.Content),
+		Value: proto.String(data.Content),
 	}}
 
-	if len(datagram.Addr) > 0 {
+	if len(data.Addr) > 0 {
 		Contents = append(Contents, &sls.LogContent{
 			Key:   proto.String("addr"),
-			Value: proto.String(datagram.Addr),
+			Value: proto.String(data.Addr),
 		})
 	}
 
-	if len(datagram.ProjectName) > 0 {
+	if len(data.ProjectName) > 0 {
 		Contents = append(Contents, &sls.LogContent{
 			Key:   proto.String("projectName"),
-			Value: proto.String(datagram.ProjectName),
+			Value: proto.String(data.ProjectName),
 		})
 	}
 
-	loggroup := &sls.LogGroup{
+	return &sls.LogGroup{
 		Logs: []*sls.Log{{
-			Time:     proto.Uint32(uint32(datagram.Time / 1e9)),
+			Time:     proto.Uint32(uint32(data.Time / 1e9)),
 			Contents: Contents,
 		}},
 	}
+}
 
-	err := l.client.PutLogs(l.projectName, l.logStoreName, loggroup)
-	if err != nil {
+// Handle *
+func (l *slsLogger) Handle(data datagram.Datagram) {
+	loggroup := process(data)
+
+	if err := l.client.PutLogs(l.projectName, l.logStoreName, loggroup); err != nil {
 		fmt.Printf("PutLogs fail, err: %s\n", err)
 	}
 }

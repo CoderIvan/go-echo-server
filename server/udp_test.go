@@ -32,16 +32,16 @@ func TestProcessLed(t *testing.T) {
 }
 
 func BenchmarkProcessLed(b *testing.B) {
+	originByte := []byte(`imei=866262040003450,iccid=89860411101871328041,project=LedIndicator4GLINGYI,version=7.0.5,gsm=24,led={"C":10000,"D":{"R":-1,"F":5,"L":-1,"T":10}},reboot=timer,request=5`)
 	for n := 0; n < b.N; n++ {
-		origin := `imei=866262040003450,iccid=89860411101871328041,project=LedIndicator4GLINGYI,version=7.0.5,gsm=24,led={"C":10000,"D":{"R":-1,"F":5,"L":-1,"T":10}},reboot=timer,request=5`
-		processLed([]byte(origin))
+		processLed(originByte)
 	}
 }
 
 func BenchmarkProcessLed02(b *testing.B) {
+	originByte := []byte(`{"gsm":"18","iccid":"89860411101871328036","imei":"866262040014556","led":{"C":10000,"D":{"F":2,"L":-1,"R":-1,"T":71}},"led2":{"C":10000,"D":{"F":6,"L":-1,"R":-1,"T":176}},"reboot":"timer","request":"6272","version":"4.1.0"}`)
 	for n := 0; n < b.N; n++ {
-		origin := `{"gsm":"18","iccid":"89860411101871328036","imei":"866262040014556","led":{"C":10000,"D":{"F":2,"L":-1,"R":-1,"T":71}},"led2":{"C":10000,"D":{"F":6,"L":-1,"R":-1,"T":176}},"reboot":"timer","request":"6272","version":"4.1.0"}`
-		processLed([]byte(origin))
+		processLed([]byte(originByte))
 	}
 }
 func TestProcess(t *testing.T) {
@@ -51,13 +51,12 @@ func TestProcess(t *testing.T) {
 
 		now := time.Now().UnixNano()
 
-		So(process([]byte(content), Addr), ShouldEqual, datagram.Datagram{
-			Addr:        Addr,
-			Content:     content,
-			ProjectName: "",
-			TagName:     "udp-server",
-			Time:        now,
-		})
+		result := process([]byte(content), Addr)
+
+		So(result.Addr, ShouldEqual, Addr)
+		So(result.Content, ShouldEqual, content)
+		So(result.TagName, ShouldEqual, "udp-server")
+		So(result.Time, ShouldBeBetweenOrEqual, now, now+int64(1*time.Millisecond))
 	})
 
 	Convey("TestProcess rule 2", t, func() {
@@ -66,13 +65,12 @@ func TestProcess(t *testing.T) {
 
 		now := time.Now().UnixNano()
 
-		So(process([]byte(content), Addr), ShouldEqual, datagram.Datagram{
-			Addr:        Addr,
-			Content:     content,
-			ProjectName: "",
-			TagName:     "udp-server",
-			Time:        now,
-		})
+		result := process([]byte(content), Addr)
+
+		So(result.Addr, ShouldEqual, Addr)
+		So(result.Content, ShouldEqual, content)
+		So(result.TagName, ShouldEqual, "udp-server")
+		So(result.Time, ShouldBeBetweenOrEqual, now, now+int64(1*time.Millisecond))
 	})
 
 	Convey("TestProcess rule 3", t, func() {
@@ -83,13 +81,13 @@ func TestProcess(t *testing.T) {
 
 		now := time.Now().UnixNano()
 
-		So(process([]byte("$"+projectName+"#"+content), Addr), ShouldEqual, datagram.Datagram{
-			Addr:        Addr,
-			Content:     content,
-			ProjectName: projectName,
-			TagName:     "udp-server",
-			Time:        now,
-		})
+		result := process([]byte("$"+projectName+"#"+content), Addr)
+
+		So(result.Addr, ShouldEqual, Addr)
+		So(result.Content, ShouldEqual, content)
+		So(result.ProjectName, ShouldEqual, projectName)
+		So(result.TagName, ShouldEqual, "udp-server")
+		So(result.Time, ShouldBeBetweenOrEqual, now, now+int64(1*time.Millisecond))
 	})
 
 	Convey("TestProcess rule 4", t, func() {

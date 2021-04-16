@@ -3,10 +3,10 @@ server:
     port: 80
   http:
     port: 80
+  mqtt:
+    port: 1883
 handler:
   sls:
-    accessKeyID: <require>
-    accessKeySecret: <require>
     endpoint: cn-qingdao.log.aliyuncs.com
     projectName: docker-alpha
     logStoreName: go-echo-server

@@ -23,9 +23,15 @@ func (ct connect) run() {
 	for _, server := range ct.servers {
 		wg.Add(1)
 		go server.Listen(func(data datagram.Datagram) {
-			for _, handler := range ct.handlers {
-				go handler.Handle(data)
+			var wg2 sync.WaitGroup
+			for _, hand := range ct.handlers {
+				wg2.Add(1)
+				go func(hd handler.Handler) {
+					hd.Handle(data)
+					wg2.Done()
+				}(hand)
 			}
+			wg2.Wait()
 		})
 	}
 	wg.Wait()
@@ -42,6 +48,9 @@ type config struct {
 		HTTP struct {
 			PORT int `yaml:"port"`
 		} `yaml:"http"`
+		MQTT struct {
+			PORT int `yaml:"port"`
+		} `yaml:"mqtt"`
 	} `yaml:"server"`
 	HANDLER struct {
 		SLS struct {
@@ -74,6 +83,10 @@ func getConfig() (config, error) {
 
 	if os.Getenv("SERVER_HTTP_PORT") != "" {
 		c.SERVER.HTTP.PORT, _ = strconv.Atoi(os.Getenv("SERVER_HTTP_PORT"))
+	}
+
+	if os.Getenv("SERVER_MQTT_PORT") != "" {
+		c.SERVER.MQTT.PORT, _ = strconv.Atoi(os.Getenv("SERVER_MQTT_PORT"))
 	}
 
 	if os.Getenv("HANDLER_SLS_ACCESSKEYID") != "" {
@@ -111,6 +124,7 @@ func main() {
 		[]server.Server{
 			server.NewUDPServer(config.SERVER.UDP.PORT),
 			server.NewHTTPServer(config.SERVER.HTTP.PORT),
+			server.NewMqttServer(config.SERVER.MQTT.PORT),
 		},
 		[]handler.Handler{
 			handler.NewLogger(),

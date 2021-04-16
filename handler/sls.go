@@ -38,9 +38,6 @@ func process(data datagram.Datagram) *sls.LogGroup {
 	Contents := []*sls.LogContent{{
 		Key:   proto.String("tagName"),
 		Value: proto.String(data.TagName),
-	}, {
-		Key:   proto.String("content"),
-		Value: proto.String(data.Content),
 	}}
 
 	if len(data.Addr) > 0 {
@@ -54,6 +51,27 @@ func process(data datagram.Datagram) *sls.LogGroup {
 		Contents = append(Contents, &sls.LogContent{
 			Key:   proto.String("projectName"),
 			Value: proto.String(data.ProjectName),
+		})
+	}
+
+	if len(data.Content) > 0 {
+		Contents = append(Contents, &sls.LogContent{
+			Key:   proto.String("content"),
+			Value: proto.String(data.Content),
+		})
+	}
+
+	if len(data.ContextID) > 0 {
+		Contents = append(Contents, &sls.LogContent{
+			Key:   proto.String("contextID"),
+			Value: proto.String(data.ContextID),
+		})
+	}
+
+	if len(data.ExtraInfo) > 0 {
+		Contents = append(Contents, &sls.LogContent{
+			Key:   proto.String("extraInfo"),
+			Value: proto.String(data.ExtraInfo),
 		})
 	}
 

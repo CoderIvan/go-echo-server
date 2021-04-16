@@ -27,12 +27,22 @@ func format(data datagram.Datagram) []interface{} {
 		params = append(params, ">>", data.ProjectName)
 	}
 
-	params = append(params, ">>", string(data.Content))
+	if len(data.Content) > 0 {
+		params = append(params, ">>", data.Content)
+	}
+
+	if len(data.ContextID) > 0 {
+		params = append(params, ">>", data.ContextID)
+	}
+
+	if len(data.ExtraInfo) > 0 {
+		params = append(params, ">>", data.ExtraInfo)
+	}
 
 	return params
 }
 
 // Handle *
 func (l *logger) Handle(data datagram.Datagram) {
-	fmt.Println(format(data))
+	fmt.Println(format(data)...)
 }

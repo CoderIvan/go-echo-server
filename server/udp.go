@@ -93,7 +93,7 @@ func (server *udpServer) Listen(handle func(datagram.Datagram)) {
 		n, addr, _ := server.conn.ReadFromUDP(buf)
 
 		if n > 0 {
-			handle(process(buf[0:n], addr.String()))
+			go handle(process(buf[0:n], addr.String()))
 		}
 	}
 }

@@ -5,7 +5,8 @@ services:
     environment:
       SERVER_UDP_PORT: 80
       SERVER_HTTP_PORT: 80
-      SERVER_MQTT_PORT: 1883
+      SERVER_MQTT_PORT: 81
+      SERVER_TCP_PORT: 82
       GIN_MODE: release
       HANDLER_SLS_ENDPOINT: cn-qingdao.log.aliyuncs.com
       HANDLER_SLS_PROJECTNAME: docker-alpha
@@ -13,4 +14,5 @@ services:
     ports:
       - 80:80
       - 80:80/udp
-      - 1883:1883
+      - 81:81
+      - 82:82

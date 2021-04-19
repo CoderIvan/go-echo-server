@@ -51,6 +51,9 @@ type config struct {
 		MQTT struct {
 			PORT int `yaml:"port"`
 		} `yaml:"mqtt"`
+		TCP struct {
+			PORT int `yaml:"port"`
+		} `yaml:"tcp"`
 	} `yaml:"server"`
 	HANDLER struct {
 		SLS struct {
@@ -89,6 +92,10 @@ func getConfig() (config, error) {
 		c.SERVER.MQTT.PORT, _ = strconv.Atoi(os.Getenv("SERVER_MQTT_PORT"))
 	}
 
+	if os.Getenv("SERVER_TCP_PORT") != "" {
+		c.SERVER.TCP.PORT, _ = strconv.Atoi(os.Getenv("SERVER_TCP_PORT"))
+	}
+
 	if os.Getenv("HANDLER_SLS_ACCESSKEYID") != "" {
 		c.HANDLER.SLS.ACCESSKEYID = os.Getenv("HANDLER_SLS_ACCESSKEYID")
 	}
@@ -116,8 +123,7 @@ func main() {
 	config, err := getConfig()
 
 	if err != nil {
-		fmt.Println("读取配置错误", err)
-		return
+		panic(fmt.Errorf("配置读取错误, %+v", err))
 	}
 
 	ct := connect{
@@ -125,6 +131,7 @@ func main() {
 			server.NewUDPServer(config.SERVER.UDP.PORT),
 			server.NewHTTPServer(config.SERVER.HTTP.PORT),
 			server.NewMqttServer(config.SERVER.MQTT.PORT),
+			server.NewTCPServer(config.SERVER.TCP.PORT),
 		},
 		[]handler.Handler{
 			handler.NewLogger(),

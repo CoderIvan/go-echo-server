@@ -4,7 +4,9 @@ server:
   http:
     port: 80
   mqtt:
-    port: 1883
+    port: 81
+  tcp:
+    port: 82
 handler:
   sls:
     endpoint: cn-qingdao.log.aliyuncs.com

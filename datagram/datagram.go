@@ -10,22 +10,3 @@ type Datagram struct {
 	ExtraInfo   string
 	Time        int64
 }
-
-func (this Datagram) Equal(that Datagram) bool {
-	if this.TagName == that.TagName {
-		if this.Addr == that.Addr {
-			if this.ProjectName == that.ProjectName {
-				if this.ContextID == that.ContextID {
-					if this.Content == that.Content {
-						if this.ExtraInfo == that.ExtraInfo {
-							if this.Time == that.Time {
-								return true
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	return false
-}

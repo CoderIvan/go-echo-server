@@ -27,8 +27,16 @@ func NewSLS(
 	projectName string,
 	logStoreName string,
 ) *slsLogger {
+	client := sls.CreateNormalInterface(endpoint, accessKeyID, accessKeySecret, "")
+	ok, err := client.CheckLogstoreExist(projectName, logStoreName)
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+		panic("check logstore exist fail")
+	}
 	return &slsLogger{
-		client:       sls.CreateNormalInterface(endpoint, accessKeyID, accessKeySecret, ""),
+		client:       client,
 		projectName:  projectName,
 		logStoreName: logStoreName,
 	}
@@ -86,7 +94,6 @@ func process(data datagram.Datagram) *sls.LogGroup {
 // Handle *
 func (l *slsLogger) Handle(data datagram.Datagram) {
 	loggroup := process(data)
-
 	if err := l.client.PutLogs(l.projectName, l.logStoreName, loggroup); err != nil {
 		fmt.Printf("PutLogs fail, err: %s\n", err)
 	}

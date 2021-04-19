@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"go-echo-server/datagram"
 	"net"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -18,8 +17,7 @@ import (
 
 // HTTPServer *
 type mqttServer struct {
-	port   int
-	server *http.Server
+	port int
 }
 
 func NewMqttServer(port int) *mqttServer {

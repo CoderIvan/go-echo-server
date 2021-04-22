@@ -23,15 +23,9 @@ func (ct connect) run() {
 	for _, server := range ct.servers {
 		wg.Add(1)
 		go server.Listen(func(data datagram.Datagram) {
-			var wg2 sync.WaitGroup
 			for _, hand := range ct.handlers {
-				wg2.Add(1)
-				go func(hd handler.Handler) {
-					hd.Handle(data)
-					wg2.Done()
-				}(hand)
+				go hand.Handle(data)
 			}
-			wg2.Wait()
 		})
 	}
 	wg.Wait()

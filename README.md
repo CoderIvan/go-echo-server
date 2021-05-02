@@ -59,14 +59,12 @@ go run main
 ```bash
 go test go-echo-server/server -v
 go test go-echo-server/handler -v
-go test go-echo-server/datagram -v
 ```
 
 ### 覆盖率测试
 ```bash
 go test go-echo-server/server -cover
 go test go-echo-server/handler -cover
-go test go-echo-server/datagram -cover
 ```
 
 ### 基准测试

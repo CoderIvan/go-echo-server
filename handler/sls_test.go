@@ -24,12 +24,16 @@ func TestSLSProcess(t *testing.T) {
 		So(*logs.Time, ShouldEqual, data.Time/1e9)
 		So(len(logs.Contents), ShouldEqual, 3)
 
-		So(*logs.Contents[0].Key, ShouldEqual, "tagName")
-		So(*logs.Contents[0].Value, ShouldEqual, data.TagName)
-		So(*logs.Contents[1].Key, ShouldEqual, "content")
-		So(*logs.Contents[1].Value, ShouldEqual, data.Content)
-		So(*logs.Contents[2].Key, ShouldEqual, "addr")
-		So(*logs.Contents[2].Value, ShouldEqual, data.Addr)
+		testDataList := [3][2]string{
+			{"tagName", data.TagName},
+			{"addr", data.Addr},
+			{"content", data.Content},
+		}
+
+		for index, testData := range testDataList {
+			So(*logs.Contents[index].Key, ShouldEqual, testData[0])
+			So(*logs.Contents[index].Value, ShouldEqual, testData[1])
+		}
 	})
 
 	Convey("TestProcess 02", t, func() {
@@ -48,13 +52,16 @@ func TestSLSProcess(t *testing.T) {
 		So(*logs.Time, ShouldEqual, data.Time/1e9)
 		So(len(logs.Contents), ShouldEqual, 4)
 
-		So(*logs.Contents[0].Key, ShouldEqual, "tagName")
-		So(*logs.Contents[0].Value, ShouldEqual, data.TagName)
-		So(*logs.Contents[1].Key, ShouldEqual, "content")
-		So(*logs.Contents[1].Value, ShouldEqual, data.Content)
-		So(*logs.Contents[2].Key, ShouldEqual, "addr")
-		So(*logs.Contents[2].Value, ShouldEqual, data.Addr)
-		So(*logs.Contents[3].Key, ShouldEqual, "projectName")
-		So(*logs.Contents[3].Value, ShouldEqual, data.ProjectName)
+		testDataList := [4][2]string{
+			{"tagName", data.TagName},
+			{"addr", data.Addr},
+			{"projectName", data.ProjectName},
+			{"content", data.Content},
+		}
+
+		for index, testData := range testDataList {
+			So(*logs.Contents[index].Key, ShouldEqual, testData[0])
+			So(*logs.Contents[index].Value, ShouldEqual, testData[1])
+		}
 	})
 }

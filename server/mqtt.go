@@ -26,8 +26,8 @@ func NewMqttServer(port int) *mqttServer {
 	}
 }
 
-func (this *mqttServer) Listen(handle func(datagram.Datagram)) {
-	ln, err := net.Listen("tcp", ":"+strconv.Itoa(this.port))
+func (mServer *mqttServer) Listen(handle func(datagram.Datagram)) error {
+	ln, err := net.Listen("tcp", ":"+strconv.Itoa(mServer.port))
 	if err != nil {
 		panic(err)
 	}
@@ -110,8 +110,5 @@ func (this *mqttServer) Listen(handle func(datagram.Datagram)) {
 		server.WithConfig(config.DefaultConfig()),
 	)
 
-	s.Run()
-}
-
-func (this *mqttServer) Close() {
+	return s.Run()
 }

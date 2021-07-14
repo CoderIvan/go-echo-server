@@ -48,6 +48,7 @@ func main() {
 			server.NewHTTPServer(cfg.SERVER.HTTP.PORT),
 			server.NewMqttServer(cfg.SERVER.MQTT.PORT),
 			server.NewTCPServer(cfg.SERVER.TCP.PORT),
+			server.NewGRPCServer(cfg.SERVER.GRPC.PORT),
 		},
 		[]handler.Handler{
 			handler.NewLogger(),

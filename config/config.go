@@ -25,6 +25,9 @@ type config struct {
 		TCP struct {
 			PORT int `yaml:"port"`
 		} `yaml:"tcp"`
+		GRPC struct {
+			PORT int `yaml:"port"`
+		} `yaml:"grpc"`
 	} `yaml:"server"`
 	HANDLER struct {
 		SLS struct {
@@ -65,6 +68,10 @@ func Get() (config, error) {
 
 	if os.Getenv("SERVER_TCP_PORT") != "" {
 		c.SERVER.TCP.PORT, _ = strconv.Atoi(os.Getenv("SERVER_TCP_PORT"))
+	}
+
+	if os.Getenv("SERVER_GRPC_PORT") != "" {
+		c.SERVER.GRPC.PORT, _ = strconv.Atoi(os.Getenv("SERVER_GRPC_PORT"))
 	}
 
 	if os.Getenv("HANDLER_SLS_ACCESSKEYID") != "" {

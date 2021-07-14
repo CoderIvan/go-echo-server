@@ -33,6 +33,9 @@
     * 例如：`$BigProject#Ivan#`，则项目名为`BigProject`，上下文ID为`Ivan`
   * `上下文ID`建议使用SN之类的唯一标识
 
+### GRPC
+  * 客户端根据指定的[proto文件](./server/message/message.proto)发送数据
+
 ## 服务器
 
 ### win10

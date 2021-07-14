@@ -7,6 +7,7 @@ services:
       SERVER_HTTP_PORT: 80
       SERVER_MQTT_PORT: 81
       SERVER_TCP_PORT: 82
+      SERVER_GRPC_PORT: 83
       GIN_MODE: release
       HANDLER_SLS_ENDPOINT: cn-qingdao.log.aliyuncs.com
       HANDLER_SLS_PROJECTNAME: docker-alpha
@@ -16,3 +17,4 @@ services:
       - 80:80/udp
       - 81:81
       - 82:82
+      - 83:83

@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/binary"
 	"encoding/json"
-	"fmt"
 	"go-echo-server/datagram"
 	"io"
 	"net"
@@ -37,16 +36,12 @@ func ParserFactory(callback func([]byte)) func(b []byte) {
 
 // UDPServer *
 type tcpServer struct {
-	listener net.Listener
+	port int
 }
 
 func NewTCPServer(port int) *tcpServer {
-	listener, err := net.Listen("tcp", ":"+strconv.Itoa(port))
-	if err != nil {
-		panic(fmt.Errorf("Listen tcp server failed, %v", err))
-	}
 	return &tcpServer{
-		listener: listener,
+		port: port,
 	}
 }
 
@@ -152,18 +147,18 @@ func handleConn(conn net.Conn, handle func(datagram.Datagram)) {
 }
 
 // Listen *
-func (server *tcpServer) Listen(handle func(datagram.Datagram)) {
+func (server *tcpServer) Listen(handle func(datagram.Datagram)) error {
+	listener, err := net.Listen("tcp", ":"+strconv.Itoa(server.port))
+	if err != nil {
+		return err
+	}
 	for {
 		// 建立socket连接
-		conn, err := server.listener.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
-			panic(fmt.Errorf("Listen.Accept failed, %v", err))
+			return err
 		}
 		// 业务处理逻辑
 		go handleConn(conn, handle)
 	}
-}
-
-func (server *tcpServer) Close() {
-	// TODO
 }

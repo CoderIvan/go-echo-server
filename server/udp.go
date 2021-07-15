@@ -10,15 +10,12 @@ import (
 
 // UDPServer *
 type udpServer struct {
-	conn *net.UDPConn
+	port int
 }
 
 func NewUDPServer(port int) *udpServer {
-	conn, _ := net.ListenUDP("udp", &net.UDPAddr{
-		Port: port,
-	})
 	return &udpServer{
-		conn: conn,
+		port: port,
 	}
 }
 
@@ -86,18 +83,24 @@ func process(buf []byte, addr string) datagram.Datagram {
 }
 
 // Listen *
-func (server *udpServer) Listen(handle func(datagram.Datagram)) {
+func (server *udpServer) Listen(handle func(datagram.Datagram)) error {
+	conn, err := net.ListenUDP("udp", &net.UDPAddr{
+		Port: server.port,
+	})
+	if err != nil {
+		return err
+	}
+
 	for {
 		// DOTO 有待优化，这里会不断的分配内存与回收内存，可以考虑使用缓冲池
 		buf := make([]byte, 1024)
-		n, addr, _ := server.conn.ReadFromUDP(buf)
+		n, addr, err := conn.ReadFromUDP(buf)
+		if err != nil {
+			return err
+		}
 
 		if n > 0 {
 			go handle(process(buf[0:n], addr.String()))
 		}
 	}
-}
-
-func (server *udpServer) Close() {
-	server.conn.Close()
 }

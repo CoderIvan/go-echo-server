@@ -33,6 +33,9 @@
     * 例如：`$BigProject#Ivan#`，则项目名为`BigProject`，上下文ID为`Ivan`
   * `上下文ID`建议使用SN之类的唯一标识
 
+### GRPC
+  * 客户端根据指定的[proto文件](./server/message/message.proto)发送数据
+
 ## 服务器
 
 ### win10
@@ -59,14 +62,12 @@ go run main
 ```bash
 go test go-echo-server/server -v
 go test go-echo-server/handler -v
-go test go-echo-server/datagram -v
 ```
 
 ### 覆盖率测试
 ```bash
 go test go-echo-server/server -cover
 go test go-echo-server/handler -cover
-go test go-echo-server/datagram -cover
 ```
 
 ### 基准测试

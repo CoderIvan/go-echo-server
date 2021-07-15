@@ -130,7 +130,6 @@ func TestUDP(t *testing.T) {
 		ch := make(chan datagram.Datagram)
 
 		server := NewUDPServer(80)
-		defer server.Close()
 
 		go func() {
 			server.Listen(func(data datagram.Datagram) {

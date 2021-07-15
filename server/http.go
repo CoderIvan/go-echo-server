@@ -46,20 +46,18 @@ func setupRouter(handle func(datagram.Datagram)) *gin.Engine {
 }
 
 // Listen *
-func (this *httpServer) Listen(handle func(datagram.Datagram)) {
+func (hServer *httpServer) Listen(handle func(datagram.Datagram)) error {
 	router := setupRouter(handle)
 
-	if this.server == nil {
-		this.server = &http.Server{
-			Addr:    ":" + strconv.Itoa(this.port),
-			Handler: router,
-		}
-		this.server.ListenAndServe()
+	server := &http.Server{
+		Addr:    ":" + strconv.Itoa(hServer.port),
+		Handler: router,
 	}
+	return server.ListenAndServe()
 }
 
-func (this *httpServer) Close() {
-	if this.server != nil {
-		this.server.Close()
+func (hServer *httpServer) Close() {
+	if hServer.server != nil {
+		hServer.server.Close()
 	}
 }

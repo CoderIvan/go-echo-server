@@ -1,4 +1,4 @@
-FROM golang:alpine as build-stage
+FROM golang:1.16-alpine as build-stage
 ENV GO111MODULE=on
 ENV GOPROXY=https://goproxy.io
 WORKDIR /app

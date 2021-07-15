@@ -30,7 +30,10 @@ func (this *serv) Listen(handle func(datagram.Datagram)) error {
 	pb.RegisterGreeterServer(s, &gServer{
 		handle: handle,
 	})
-	return s.Serve(lis)
+	if err := s.Serve(lis); err != nil {
+		return err
+	}
+	return nil
 }
 
 type gServer struct {

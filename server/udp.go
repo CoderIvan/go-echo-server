@@ -64,6 +64,7 @@ func process(buf []byte, addr string) datagram.Datagram {
 			if buf[i] == '#' {
 				projectName = string(buf[1:i])
 				content = buf[i+1:]
+				break
 			}
 		}
 	} else { // 对显示屏终端进行特殊处理

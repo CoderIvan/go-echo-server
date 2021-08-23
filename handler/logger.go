@@ -27,6 +27,10 @@ func format(data datagram.Datagram) []interface{} {
 		params = append(params, ">>", data.ProjectName)
 	}
 
+	if len(data.HexContent) > 0 {
+		params = append(params, ">>", data.HexContent)
+	}
+
 	if len(data.Content) > 0 {
 		params = append(params, ">>", data.Content)
 	}

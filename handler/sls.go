@@ -62,6 +62,13 @@ func process(data datagram.Datagram) *sls.LogGroup {
 		})
 	}
 
+	if len(data.HexContent) > 0 {
+		Contents = append(Contents, &sls.LogContent{
+			Key:   proto.String("hexContent"),
+			Value: proto.String(data.HexContent),
+		})
+	}
+
 	if len(data.Content) > 0 {
 		Contents = append(Contents, &sls.LogContent{
 			Key:   proto.String("content"),

@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"go-echo-server/datagram"
 	"net"
 	"strings"
@@ -55,6 +56,15 @@ func processLed(buf []byte) (bool, string, []byte) {
 	return isSuccess, projectName, content
 }
 
+func toHexString(originList []byte) string {
+	var contentList []string = make([]string, len(originList))
+	for i := 0; i < len(originList); i++ {
+		contentList[i] = fmt.Sprintf("%02X", originList[i])
+	}
+
+	return strings.Join(contentList, " ")
+}
+
 func process(buf []byte, addr string) datagram.Datagram {
 	projectName := ""
 	content := buf
@@ -78,6 +88,7 @@ func process(buf []byte, addr string) datagram.Datagram {
 		TagName:     "udp-server",
 		Addr:        addr,
 		ProjectName: projectName,
+		HexContent:  toHexString(content),
 		Content:     string(content),
 		Time:        time.Now().UnixNano(),
 	}

@@ -61,7 +61,6 @@ func toHexString(originList []byte) string {
 	for i := 0; i < len(originList); i++ {
 		contentList[i] = fmt.Sprintf("%02X", originList[i])
 	}
-
 	return strings.Join(contentList, " ")
 }
 

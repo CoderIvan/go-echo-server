@@ -90,6 +90,23 @@ func TestProcess(t *testing.T) {
 		So(result.Time, ShouldBeBetweenOrEqual, now, now+int64(1*time.Millisecond))
 	})
 
+	Convey("TestProcess rule 3.1", t, func() {
+		Addr := "127.0.0.1"
+
+		projectName := "project_52"
+		content := `length<32`
+
+		now := time.Now().UnixNano()
+
+		result := process([]byte("$"+projectName+"#"+content), Addr)
+
+		So(result.Addr, ShouldEqual, Addr)
+		So(result.Content, ShouldEqual, content)
+		So(result.ProjectName, ShouldEqual, projectName)
+		So(result.TagName, ShouldEqual, "udp-server")
+		So(result.Time, ShouldBeBetweenOrEqual, now, now+int64(1*time.Millisecond))
+	})
+
 	Convey("TestProcess rule 4", t, func() {
 		Addr := "127.0.0.1"
 

@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/DrmagicE/gmqtt v0.4.0
 	github.com/aliyun/aliyun-log-go-sdk v0.1.21
-	github.com/gin-gonic/gin v1.7.2
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.7.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/mock v1.6.0 // indirect
